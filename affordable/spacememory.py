@@ -16,11 +16,11 @@ class SpaceMemory(object):
         
         if enacted==0:  # forward : everything move backward
             for i in range(3):
-                self.cubes[i][1]-=10    # TODO : calibration
+                self.cubes[i][1]-=8   # TODO : calibration
                 self.cubes[i][4]+=1
 
             for i in range(len(self.bumps)):
-                self.bumps[i][1]-=10    # TODO : calibration
+                self.bumps[i][1]-=8    # TODO : calibration
                 self.bumps[i][3]+=1
 
         if enacted==1:  #  bump : no movement
@@ -32,11 +32,11 @@ class SpaceMemory(object):
         if enacted==2:  # push : everything move backward except pushed cube
             for i in range(3):
                 if cubes[i][0]<-5 or cubes[i][0]>5 or cubes[i][1]<0 or cubes[i][1]>10: # TODO : calibration
-                    self.cubes[i][1]-=10    # TODO : calibration
+                    self.cubes[i][1]-=8    # TODO : calibration
                 self.cubes[i][4]+=1
 
             for i in range(len(self.bumps)):
-                self.bumps[i][1]-=10    # TODO : calibration
+                self.bumps[i][1]-=8    # TODO : calibration
                 self.bumps[i][3]+=1
 
         if enacted==3:  # eat : cube changes to red
