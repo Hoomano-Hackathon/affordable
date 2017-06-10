@@ -18,6 +18,12 @@ class Interaction:
         TURN_DIAG_LEFT = 8
         TURN_DIAG_RIGHT = 9
 
+    def __eq__(self, other):
+        if isinstance(other, Interaction):
+            return self.id == other.id
+        else:
+            return self.id == other
+
 class Action(Interaction):
     def __init__(self, identifier, valence, actionFunctor, signature=None):
         Interaction.__init__(self, identifier, valence, signature)
@@ -27,12 +33,20 @@ class Action(Interaction):
         self.action()
 
 class Rotation(Action):
-    def __init__(self, identifier, valence, actionFunctor, angle, signature=None):
-        Action.__init__(self, identifier, valence, actionFunctor, signature)
+    def __init__(self, identifier, valence, actionFunctor, angle):
+        Action.__init__(self, identifier, valence, actionFunctor, None)
         self.angle = angle
 
     def __call__(self):
         self.action(self.angle)
+
+class DriveStraight(Action):
+    def __init__(self, identifier, valence, actionFunctor, distance, signature=None):
+        Action.__init__(self, identifier, valence, actionFunctor, signature)
+        self.distance = distance 
+
+    def __call__(self):
+        self.action(self.distance)
 
 
 if __name__ == "__main__":
@@ -44,3 +58,5 @@ if __name__ == "__main__":
             45)
     a()
     r()
+    print(a == Interaction.Type.CHARGE)
+    print(a == r)
