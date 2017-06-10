@@ -26,8 +26,7 @@ from cozmo.util import degrees
 
 
 class CozmoActions(object):
-    def __init__(self, robot, cube1):
-        self.cube1 = cube1
+    def __init__(self, robot):
         self.robot = robot
         self.robot.set_lift_height(1.0).wait_for_completed()
 
@@ -69,3 +68,13 @@ class CozmoActions(object):
         self.robot.set_lift_height(0.7).wait_for_completed()
         time.sleep(0.5)
         self.robot.set_lift_height(1.0).wait_for_completed()
+
+    def checkForCubeAhead(self):
+        cube = self.robot.world.wait_for_observed_light_cube(timeout=-1)
+        if cube is not None:
+            print(cube)
+            line=str(cube.pose).split(" ")
+            return [cube.object_id, float(line[3]) / 10, float(line[5]) / 10, float(line[21].replace('(', ''))]
+
+        return None
+

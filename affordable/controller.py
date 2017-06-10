@@ -1,9 +1,8 @@
-from spacememory import *
-from signature import *
-from interactions import *
+from affordable.spacememory import *
+from affordable.signature import *
+from affordable.interactions import *
 from math import *
 from sys import *
-# from cozmo_actions import *
 
 spacemem = SpaceMemory()
 signatures = Signatures()
@@ -123,11 +122,16 @@ def step(enacted):
         robotHunger = 0.04
     return nextAction
 
-def main():
+theCube = []
+
+
+def start_controller(robot):
+    global theCube
     enacted = Interaction.Type.FORWARD
+    cozmo_actions = robot.CozmoActions(robot)
+    theCube = cozmo_actions.checkForCubeAhead()
     exitOrNot = ""
     while exitOrNot != "q":
         enacted = step(enacted)
         exitOrNot = input('Press ENTER to continue.')
 
-main()
