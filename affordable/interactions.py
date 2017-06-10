@@ -24,6 +24,12 @@ class Interaction:
         else:
             return self.id == other
 
+    def getValence(self):
+        try:
+            return self.valence()
+        except:
+            return self.valence
+
 class Action(Interaction):
     def __init__(self, identifier, valence, actionFunctor, signature=None):
         Interaction.__init__(self, identifier, valence, signature)
