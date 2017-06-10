@@ -7,7 +7,7 @@ class Signatures(object):
         self.values=[[[[0 for y in range(100)] for x in range(100)] for layer in range(4)] for interaction in range(10)]
 
         # define signature for each interaction
-        
+
         # forward : no object in front of the robot (pos : [50;50])
         for layer in range(4):
             for i in range(47,54):
@@ -57,15 +57,13 @@ class Signatures(object):
                             self.projection[inter][layer][i][j]=[]
 
         # project
-        for step in range(20):
+        for step in range(3):
             projection_buff=deepcopy(self.projection)
             for inter in range(6):
                 for layer in range(4):
                     for i in range(100):
                         for j in range(100):
-                            
                             if projection_buff[inter][layer][i][j]!=None:
-                                
                                 #-------------------------------------------
                                 # project through forward
                                 sequence=list(projection_buff[inter][layer][i][j])
@@ -165,7 +163,7 @@ class Signatures(object):
                                     if self.projection[inter][layer][int(x2+50)][int(y2+50)]==None:
                                         self.projection[inter][layer][int(x2+50)][int(y2+50)]=sequence
 
-    def predict(self, inter, environment):
+    def predict(self, inter, env):
         if inter<6:
 
             sum=0
@@ -201,12 +199,13 @@ class Signatures(object):
         sequences=[ [] for y in range(6)]
 
         # detect sequences
-        for inter in range(6)
+        for inter in range(6):
             for layer in range(4):
                 for i in range(100):
                     for j in range(100):
-                        if environment[layer][i][j]!=0 and self.signatures[inter][layer][i][j]!=None:
-                            sequences[inter.append(self.signatures[inter][layer][i][j])
+                        if (environment[layer][i][j]!=0 and
+                                self.signatures[inter][layer][i][j]!=None):
+                            sequences[inter.append(self.signatures[inter][layer][i][j])]
         return sequences
 
 

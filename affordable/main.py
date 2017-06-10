@@ -1,10 +1,17 @@
 from spacememory import *
 from signature import *
 from interactions import *
+from math import *
+from sys import *
 # from cozmo_actions import *
 
 spacemem = SpaceMemory()
 signatures = Signatures()
+
+robotHunger = 1.0
+def getValenceOfEat():
+    global robotHunger
+    return 50 * robotHunger
 
 drive_distance = 150
 interactions = {
@@ -26,17 +33,17 @@ interactions = {
             None,
             drive_distance,
             signatures.of(Interaction.Type.PUSH)),
-        Interaction.Type.EAT: Interaction(
+        Interaction.Type.EAT: Action(
             Interaction.Type.EAT,
-            None, #functor in agent 
+            getValenceOfEat,
             None,
             signatures.of(Interaction.Type.EAT)),
-        Interaction.Type.MISS: Interaction(
+        Interaction.Type.MISS: Action(
             Interaction.Type.MISS,
             -1,
             None,
             signatures.of(Interaction.Type.MISS)),
-        Interaction.Type.CHARGE: Interaction(
+        Interaction.Type.CHARGE: Action(
             Interaction.Type.CHARGE,
             -1,
             None,
@@ -45,46 +52,82 @@ interactions = {
             Interaction.Type.TURN_LEFT,
             -1,
             None,
-            90,
-            signatures.of(Interaction.Type.TURN_LEFT)),
+            90),
         Interaction.Type.TURN_RIGHT: Rotation(
             Interaction.Type.TURN_RIGHT,
             -1,
             None,
-            -90,
-            signatures.of(Interaction.Type.TURN_RIGHT)),
+            -90),
         Interaction.Type.TURN_DIAG_LEFT: Rotation(
             Interaction.Type.TURN_DIAG_LEFT,
             -1,
             None,
-            45,
-            signatures.of(Interaction.Type.TURN_DIAG_LEFT)),
+            45),
         Interaction.Type.TURN_DIAG_RIGHT: Rotation(
             Interaction.Type.TURN_DIAG_RIGHT,
             -1,
             None,
-            -45,
-            signatures.of(Interaction.Type.TURN_DIAG_RIGHT)),
+            -45),
         }
 
-def main():
-    print('wow')
+farAwayObjetsInterest = 1
+spaceMemoryCoef = 1
+
 
 def checkForCubesAhead():
     print('wow')
 
+def utility(loc):
+    util = [0 for k in range(10)]
+    for inter in range(6):
+        for seq in loc[inter]:
+            val = interactions[inter].getValence()
+            util[seq[-1]] += val * math.exp(
+                    -farAwayObjetsInterest * len(seq))
+    return util
+
+def mostUsefulAction(enactability, util):
+    bestAction = -1
+    maximum = float("-inf")
+    for i in range(len(util)):
+        if enactability[i]:
+            if util[i] > maximum:
+                maximum = util[i]
+                bestAction = i
+    return bestAction
+
 
 def step(enacted):
+    global robotHunger
     spacemem.update(enacted)
 
     checkForCubesAhead()
 
-    if enacted.id == Interaction.Type.BUMP:
+    if Interaction.Type.BUMP == enacted:
         spacemem.bumpDetected()
+    elif Interaction.Type.EAT == enacted:
+        robotHunger = -0.1
 
     env = spacemem.getMatrix()
-    enactability = [false for i in range(10)]
+    enactability = [False for i in range(10)]
     for i in range(10):
         enactability[i] = signatures.predict(i, env)
+
+    localizations = signatures.getPositions(env)
+    util = utility(localizations)
+    for i in range(10):
+        util[i] = interactions[i].getValence() + spaceMemoryCoef * util[i]
+
+    nextAction = mostUsefulAction(enactability, util)
+    if robotHunger < 1.0:
+        robotHunger = 0.04
+    return nextAction
+
+def main():
+    enacted = Interaction.Type.FORWARD
+    exitOrNot = ""
+    while exitOrNot != "q":
+        enacted = step(enacted)
+        exitOrNot = input('Press ENTER to continue.')
 
 main()
