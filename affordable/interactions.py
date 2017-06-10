@@ -43,7 +43,7 @@ class Rotation(Action):
 class DriveStraight(Action):
     def __init__(self, identifier, valence, actionFunctor, distance, signature=None):
         Action.__init__(self, identifier, valence, actionFunctor, signature)
-        self.distance = distance 
+        self.distance = distance
 
     def __call__(self):
         self.action(self.distance)
