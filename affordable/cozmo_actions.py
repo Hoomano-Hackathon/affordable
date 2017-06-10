@@ -46,6 +46,19 @@ class CozmoActions(object):
         elif move_type == interactions.Interaction.Type.MISS:
             self.animate_lift()
 
+
+    def rotation(self, angle):
+            self.robot.turn_in_place(degrees(angle)).wait_for_completed(),
+
+
+    def eat(self, cube):
+            self.animate_lift()
+            self.cube.set_lights(cozmo.lights.red_light)
+
+    def charge(self,cube):
+            self.animate_lift()
+            self.cube.set_lights(cozmo.lights.red_light)
+
     def move_forward(self):
         self.robot.drive_wheels(50, 50)
         t = 0
@@ -63,6 +76,7 @@ class CozmoActions(object):
             self.robot.drive_wheels(-50, -50)
             time.sleep(2)
             self.robot.drive_wheels(0, 0)
+        return cliff_detected
 
     def animate_lift(self):
         self.robot.set_lift_height(0.7).wait_for_completed()
@@ -72,7 +86,6 @@ class CozmoActions(object):
     def checkForCubeAhead(self):
         cube = self.robot.world.wait_for_observed_light_cube(timeout=-1)
         if cube is not None:
-            print(cube)
             line=str(cube.pose).split(" ")
             return [cube.object_id, float(line[3]) / 10, float(line[5]) / 10, float(line[21].replace('(', ''))]
 
