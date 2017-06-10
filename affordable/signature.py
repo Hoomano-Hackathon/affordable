@@ -180,7 +180,7 @@ class Signatures(object):
             elif inter==1: # bump
                 return sum>0
 
-            elif inter==2: # puch
+            elif inter==2: # push
                 return sum>0
 
             elif inter==3: # eat
@@ -197,6 +197,16 @@ class Signatures(object):
     def of(self, interaction):
         self.values[interaction]
 
+    def getExploitationUtility(self, environment):
+        sequences=[ [] for y in range(6)]
 
+        # detect sequences
+        for inter in range(6)
+            for layer in range(4):
+                for i in range(100):
+                    for j in range(100):
+                        if environment[layer][i][j]!=0 and self.signatures[inter][layer][i][j]!=None:
+                            sequences[inter.append(self.signatures[inter][layer][i][j])
+        utilities=[ 0 for i in range(10)]
 
 

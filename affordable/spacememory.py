@@ -3,7 +3,6 @@ import math
 class SpaceMemory(object):
     """ A structure that stores and keeps trace of observed objects """
 
-    
     def __init__(self):
         self.cubes=[[0 for y in range(5)] for x in range(3)]    # position of the three cubes, (X,Y,theta, color,age)
         for i in range(3):
@@ -11,6 +10,11 @@ class SpaceMemory(object):
 
         self.bumps=[]                       # position of detected bumps  (X,Y,theta,age)
 
+    # storage for a different reference
+    self.cubes_ref=[[0 for y in range(5)] for x in range(3)]
+    for i in range(3):
+        self.cubes_ref[i][4]=21
+    self.bumps_ref=[]
 
     def update(self,enacted):
         
@@ -133,4 +137,34 @@ class SpaceMemory(object):
 
         return env
 
+    def changeReference(self, x,y,theta):
+        for c in range(3):
+            pos_x=self.cubes[c][0]
+            pos_y=self.cubes[c][1]
+            angle=self.cubes[c][2]
+            
+            # translation
+            pos_x-=x
+            pos_y-=y
+            
+            # rotation
+            pos_x2=pos_x*math.cos(math.radians(-theta)) - pos_y*math.sin(math.radians(-theta))
+            pos_y2=pos_x*math.sin(math.radians(-theta)) + pos_y*math.cos(math.radians(-theta))
+            angle-=theta
+            
+            self.cubes_ref[c]=[pos_x2,pos_y2,angle,self.cubes[c][3], self.cubes[c][4] ]
+
+        for b in range(len(self.bumps)):
+            pos_x=self.bumps[b][0]
+            pos_y=self.bumps[b][1]
+            
+            # translation
+            pos_x-=x
+            pos_y-=y
+            
+            # rotation
+            pos_x2=pos_x*math.cos(math.radians(-theta)) - pos_y*math.sin(math.radians(-theta))
+            pos_y2=pos_x*math.sin(math.radians(-theta)) + pos_y*math.cos(math.radians(-theta))
+            
+            self.bumps_ref[b]=[pos_x2,pos_y2,angle,self.bumps[b][2], self.bumps[b][3] ]
 
