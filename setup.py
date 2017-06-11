@@ -49,7 +49,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'affordable=affordable.affordable:main',
+            'affordable=affordable.affordable2:main',
         ],
     },
 )
