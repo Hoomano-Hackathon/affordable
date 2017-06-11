@@ -131,7 +131,56 @@ def mainLoop(robot: cozmo.robot.Robot):
             valences.append(getValence(seq,hunger_robot))
     
         print(valences)
-    
+
+        # define expected user valences as defined by the robot
+        sequences_user = getSequences(last_observed_user_pos)
+        print(sequences_user)
+        valences_user = []
+        for seq in sequences_user:
+            valences_user.append(getValence(seq, hunger_user))
+        print(valences_user)
+
+        # try to define intention of the user
+        sorted_list = sorted(valences_user)
+
+        if sorted_list[-1] > sorted_list[-2]:  # intention of the user is obvious
+            index_max_user = -1
+            val_max_user = -1000
+
+            for i in range(len(valences_user)):
+                if valences_user[i] > val_max_user:
+                    index_max_user = i
+                    val_max_user = valences_user[i]
+
+                    # get most possible profitable sequence for the user
+            best_sequence = sequences_user[index_max_user]
+            print(best_sequence)
+            # look for impossible interactions
+            i = 0
+            found = False
+            while i < len(best_sequence) and not found:
+                if best_sequence[i] == 3: found = True
+                i += 1
+
+            if found:
+                # hard-coded relation between objects in robot and user point of view
+                print("found")
+                if pos_robot == 0:
+                    if last_observed_user_pos == 0:
+                        valences[0] += val_max_user
+                    elif last_observed_user_pos == 2:
+                        valences[4] += val_max_user
+                elif pos_robot == 1:
+                    if last_observed_user_pos == 0:
+                        valences[0] += val_max_user
+                    elif last_observed_user_pos == 2:
+                        valences[5] += val_max_user
+                elif pos_robot == 2:
+                    if last_observed_user_pos == 0:
+                        valences[0] += val_max_user
+                    elif last_observed_user_pos == 2:
+                        valences[4] += val_max_user
+
         index_max=-1
         val_max=-1000
     
@@ -161,6 +210,7 @@ def mainLoop(robot: cozmo.robot.Robot):
                     light_cube3.set_lights(cozmo.lights.red_light)
                     cube2 = 0
             hunger_robot=-0.2
+            time.sleep(1)
         elif intended == 3: # charge
             if pos_robot == 0:
                 if cube1 == 0:
@@ -170,6 +220,7 @@ def mainLoop(robot: cozmo.robot.Robot):
                 if cube2 == 0:
                     light_cube3.set_lights(cozmo.lights.green_light)
                     cube2=1
+            time.sleep(1)
         elif intended == 4:
             time.sleep(2)
 
@@ -191,7 +242,7 @@ def mainLoop(robot: cozmo.robot.Robot):
                 print(last_observed_user_pos)
 
 
-        if hunger_robot<1:hunger_robot+=0.01
+        if hunger_robot<1:hunger_robot+=0.05
         # exitOrNot = input('Press ENTER to continue.')
 
 
