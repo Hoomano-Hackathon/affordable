@@ -118,27 +118,42 @@ def mainLoop(robot: cozmo.robot.Robot):
     # light_cube2 = robot.world.get_light_cube(LightCube2Id)  # looks like a lamp / heart
     light_cube3 = robot.world.get_light_cube(LightCube3Id)  # looks like the letters 'ab' over 'T'
 
-    light_cube1.set_lights(cozmo.lights.green_light)
+    if light_cube1:
+        light_cube1.set_lights(cozmo.lights.green_light)
+
     # light_cube2.set_lights(cozmo.lights.green_light)
-    light_cube3.set_lights(cozmo.lights.green_light)
+    if light_cube3:
+        light_cube3.set_lights(cozmo.lights.green_light)
+
+    f = open('activity_trace', 'w')
+    i = 1
 
     exitOrNot = ""
+    found = False
+    text_help = 0
     while exitOrNot != "q":
+        f.write("STEP " + str(i))
+        f.write("\nROBOT\n")
         sequences=getSequences(pos_robot)
         print(sequences)
+        f.write(str(sequences))
         valences=[]
         for seq in sequences:
             valences.append(getValence(seq,hunger_robot))
     
         print(valences)
+        f.write(str(valences))
 
         # define expected user valences as defined by the robot
+        f.write("\nUSER\n")
         sequences_user = getSequences(last_observed_user_pos)
         print(sequences_user)
+        f.write(str(sequences))
         valences_user = []
         for seq in sequences_user:
             valences_user.append(getValence(seq, hunger_user))
         print(valences_user)
+        f.write(str(valences_user))
 
         # try to define intention of the user
         sorted_list = sorted(valences_user)
@@ -157,12 +172,15 @@ def mainLoop(robot: cozmo.robot.Robot):
             print(best_sequence)
             # look for impossible interactions
             i = 0
-            found = False
+            found=False
             while i < len(best_sequence) and not found:
                 if best_sequence[i] == 3: found = True
                 i += 1
 
             if found:
+                if text_help==0:
+                    robot.say_text("Help", voice_pitch=1.5).wait_for_completed()
+                    text_help=1
                 # hard-coded relation between objects in robot and user point of view
                 print("found")
                 if pos_robot == 0:
@@ -180,6 +198,8 @@ def mainLoop(robot: cozmo.robot.Robot):
                         valences[0] += val_max_user
                     elif last_observed_user_pos == 2:
                         valences[4] += val_max_user
+            else:
+                text_help=0
 
         index_max=-1
         val_max=-1000
@@ -190,8 +210,13 @@ def mainLoop(robot: cozmo.robot.Robot):
                 val_max=valences[i]
     
         intended=sequences[index_max][0]
-    
+
         print(intended)
+
+        if found:
+            f.write("\nINTENDED: " + str(intended) + " Assistance\n\n")
+        else:
+            f.write("\nINTENDED: " + str(intended) + " Exploitation\n\n")
 
         # intend interaction with robot
         if intended == 0: # turn left
@@ -209,8 +234,12 @@ def mainLoop(robot: cozmo.robot.Robot):
                 if cube2 == 1:
                     light_cube3.set_lights(cozmo.lights.red_light)
                     cube2 = 0
-            hunger_robot=-0.2
+            hunger_robot=-0.5
+            robot.set_lift_height(0.7).wait_for_completed()
+            time.sleep(0.5)
+            robot.set_lift_height(1.0).wait_for_completed()
             time.sleep(1)
+            robot.say_text("Delicious", voice_pitch=1.5).wait_for_completed()
         elif intended == 3: # charge
             if pos_robot == 0:
                 if cube1 == 0:
@@ -220,7 +249,11 @@ def mainLoop(robot: cozmo.robot.Robot):
                 if cube2 == 0:
                     light_cube3.set_lights(cozmo.lights.green_light)
                     cube2=1
+            robot.set_lift_height(0.7).wait_for_completed()
+            time.sleep(0.5)
+            robot.set_lift_height(1.0).wait_for_completed()
             time.sleep(1)
+            #robot.play_anim_trigger(cozmo.anim.Triggers.MajorWin).wait_for_completed()
         elif intended == 4:
             time.sleep(2)
 
@@ -243,6 +276,7 @@ def mainLoop(robot: cozmo.robot.Robot):
 
 
         if hunger_robot<1:hunger_robot+=0.05
+        i+=1
         # exitOrNot = input('Press ENTER to continue.')
 
 
