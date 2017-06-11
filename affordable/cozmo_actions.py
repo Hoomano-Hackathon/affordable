@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with Affordable.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import asyncio
 import cozmo
 import time
 from affordable import interactions
@@ -28,7 +29,7 @@ from cozmo.util import degrees
 class CozmoActions(object):
     def __init__(self, robot):
         self.robot = robot
-        self.robot.set_lift_height(1.0).wait_for_completed()
+        # self.robot.set_lift_height(1.0).wait_for_completed()
 
     def move(self, move_type):
         if move_type == interactions.Interaction.Type.FORWARD:
@@ -84,10 +85,14 @@ class CozmoActions(object):
         self.robot.set_lift_height(1.0).wait_for_completed()
 
     def checkForCubeAhead(self):
-        cube = self.robot.world.wait_for_observed_light_cube(timeout=-1)
-        if cube is not None:
-            line=str(cube.pose).split(" ")
-            return [cube.object_id, float(line[3]) / 10, float(line[5]) / 10, float(line[21].replace('(', ''))]
+        try:
+            cube = self.robot.world.wait_for_observed_light_cube(timeout=5)
+
+            if cube is not None:
+                line = str(cube.pose).split(" ")
+                return [cube.object_id, float(line[3]) / 10, float(line[5]) / 10, float(line[21].replace('(', ''))]
+        except asyncio.TimeoutError:
+            print("Didn't find a cube")
 
         return None
 

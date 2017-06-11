@@ -20,11 +20,12 @@ along with Affordable.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 
-from affordable import cozmo_actions, controller, interactions
+from affordable import controller
 import cozmo
 
 
 def affordable_program(robot: cozmo.robot.Robot):
+    robot.set_lift_height(0.0).wait_for_completed()
     controller.start_controller(robot)
 
 

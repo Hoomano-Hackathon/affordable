@@ -1,6 +1,7 @@
 from affordable.spacememory import *
 from affordable.signature import *
 from affordable.interactions import *
+from affordable.cozmo_actions import *
 from math import *
 from sys import *
 
@@ -17,7 +18,9 @@ drive_distance = 150
 theCube = []
 
 interactions = {}
-def initializeInteractions(cozmoActions):
+
+
+def initializeInteractions(cozmo_actions):
     global interactions
     global theCube
     interactions = {
@@ -141,7 +144,7 @@ def step(enacted):
     nextAction = mostUsefulAction(enactability, util)
     if robotHunger < 1.0:
         robotHunger = 0.04
-    return nextAction
+    return doAction(nextAction)
 
 
 def start_controller(robot):
@@ -149,9 +152,9 @@ def start_controller(robot):
     global cozmoActions
 
     enacted = Interaction.Type.FORWARD
-    cozmoActions = robot.CozmoActions(robot)
-    initializeInteractions(cozmo_actions)
-    checkForCubeAhead()
+    cozmoActions = CozmoActions(robot)
+    initializeInteractions(cozmoActions)
+    checkForCubesAhead()
     exitOrNot = ""
     while exitOrNot != "q":
         enacted = step(enacted)

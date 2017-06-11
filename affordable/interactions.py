@@ -51,9 +51,6 @@ class DriveStraight(Action):
         Action.__init__(self, identifier, valence, actionFunctor, signature)
         self.distance = distance
 
-    def __call__(self):
-        self.action(self.distance)
-
 
 if __name__ == "__main__":
     a = Action(Interaction.Type.CHARGE, -1, (lambda: print(-1)))
